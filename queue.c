@@ -84,13 +84,30 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
+    struct list_head *pos;
+    for (pos = (head)->prev; pos != (head); pos = pos->prev) {
+        element_t *pos_element = list_entry(pos, element_t, list);
+        if (!strncmp(sp, pos_element->value, bufsize)) {
+            list_del(pos);
+            return pos_element;
+        }
+    }
+
     return NULL;
 }
 
 /* Return number of elements in queue */
 int q_size(struct list_head *head)
 {
-    return -1;
+    if (!head)
+        return 0;
+
+    int count = 0;
+    struct list_head *pos;
+    list_for_each (pos, head)
+        count++;
+
+    return count;
 }
 
 /* Delete the middle node in queue */
